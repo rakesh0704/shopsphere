@@ -29,4 +29,19 @@ public class JwtService {
                 )
                 .compact();
     }
+    public String extractEmail(String token) {
+
+    return Jwts.parser()
+            .setSigningKey(SECRET_KEY)
+            .parseClaimsJws(token)
+            .getBody()
+            .getSubject();
+}
+public boolean validateToken(
+        String token,
+        String email) {
+
+    return extractEmail(token)
+            .equals(email);
+}
 }
