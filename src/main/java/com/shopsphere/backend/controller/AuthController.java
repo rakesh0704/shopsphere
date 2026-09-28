@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import com.shopsphere.backend.service.JwtService;
+import com.shopsphere.backend.dto.LoginResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -17,6 +19,9 @@ public class AuthController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+private JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(
@@ -48,8 +53,7 @@ public class AuthController {
                 "User registered successfully");
     }
     @PostMapping("/login")
-public ResponseEntity<String> login(
-        @RequestBody LoginRequest request) {
+public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
     User user = userRepository
             .findByEmail(request.getEmail())
@@ -69,7 +73,10 @@ public ResponseEntity<String> login(
                 .body("Invalid password");
     }
 
-    return ResponseEntity.ok(
-            "Login Successful");
+    String token =
+jwtService.generateToken(
+user.getEmail());
+return ResponseEntity.ok(
+        new LoginResponse(token));
 }
 }
